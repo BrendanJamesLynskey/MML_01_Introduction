@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MML 01 &mdash; Introduction and Motivation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0a; --bg-card: #0d1117; --bg-code: #161b22;
+            --text-primary: #e6edf3; --text-secondary: #8b949e;
+            --accent: #a78bfa; --accent-dim: #a78bfa44; --accent-glow: #a78bfa33;
+            --accent-2: #f472b6; --accent-3: #fbbf24; --accent-4: #34d399;
+            --border: #21262d;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-body: 'Inter', sans-serif;
+            --max-width: 900px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); font-size: 17px; line-height: 1.7; overflow-x: hidden; }
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem 1.5rem; text-align: center; position: relative; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 700px; height: 600px; background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%); pointer-events: none; z-index: 0; }
+        .hero > * { position: relative; z-index: 1; }
+        .series-label { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
+        .hero h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; color: var(--text-primary); line-height: 1.2; margin-bottom: 1rem; }
+        .hero h1 .accent { color: var(--accent); }
+        .hero .subtitle { font-size: 1.1rem; color: var(--text-secondary); max-width: 640px; margin-bottom: 2rem; }
+        .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 2.5rem; }
+        .tag { font-family: var(--font-mono); font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 999px; border: 1px solid var(--accent); color: var(--accent); background: var(--accent-dim); white-space: nowrap; }
+        .pipeline { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.25rem; margin-bottom: 1rem; max-width: var(--max-width); }
+        .pipeline-step { font-family: var(--font-mono); font-size: 0.7rem; padding: 0.3rem 0.7rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; color: var(--text-secondary); white-space: nowrap; }
+        .pipeline-arrow { color: var(--accent); font-size: 0.9rem; font-weight: 700; }
+        .slide { min-height: 100vh; max-width: var(--max-width); margin: 0 auto; padding: 4rem 1.5rem; position: relative; display: flex; flex-direction: column; justify-content: center; }
+        .slide-number { font-family: var(--font-display); font-size: 5rem; font-weight: 700; color: var(--accent-dim); position: absolute; top: 2rem; right: 1.5rem; line-height: 1; user-select: none; }
+        .slide h2 { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; color: var(--accent); margin-bottom: 1.5rem; line-height: 1.25; }
+        .slide h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .slide p { margin-bottom: 1rem; color: var(--text-secondary); }
+        .slide p strong { color: var(--text-primary); }
+        .slide ul, .slide ol { margin-bottom: 1rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        .slide li { margin-bottom: 0.4rem; }
+        .slide li strong { color: var(--text-primary); }
+        .slide code { background: var(--bg-code); padding: 0.1rem 0.35rem; border-radius: 3px; font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+        .diagram-grid { display: grid; gap: 0.75rem; margin: 1.5rem 0; padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
+        .diagram-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+        .diagram-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .diagram-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+        .diagram-panel { padding: 1rem; background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; }
+        .diagram-panel.accent-border { border-left: 3px solid var(--accent); }
+        .diagram-panel.r { border-left: 3px solid var(--accent-2); }
+        .diagram-panel.y { border-left: 3px solid var(--accent-3); }
+        .diagram-panel.g { border-left: 3px solid var(--accent-4); }
+        .diagram-panel h4 { font-family: var(--font-display); font-size: 1rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .diagram-panel.r h4 { color: var(--accent-2); }
+        .diagram-panel.y h4 { color: var(--accent-3); }
+        .diagram-panel.g h4 { color: var(--accent-4); }
+        .diagram-panel p, .diagram-panel ul { font-size: 0.9rem; }
+        .callout { background: var(--bg-card); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; margin: 1.25rem 0; }
+        .callout p { margin-bottom: 0; }
+        .callout .callout-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+        .quote { font-family: var(--font-display); font-size: 1.1rem; font-style: italic; color: var(--text-primary); padding: 1rem 1.5rem; border-left: 3px solid var(--accent); background: var(--bg-card); margin: 1.25rem 0; border-radius: 0 8px 8px 0; }
+        .quote .attr { display: block; margin-top: 0.5rem; font-style: normal; font-size: 0.85rem; color: var(--text-secondary); font-family: var(--font-mono); }
+        .canvas-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin: 1.25rem 0; overflow-x: auto; }
+        .canvas-wrap canvas, .canvas-wrap svg { display: block; margin: 0 auto; max-width: 100%; }
+        .control-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin: 1.25rem 0; }
+        .control-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+        .control-row label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); min-width: 130px; }
+        .control-row input[type="range"] { flex: 1; min-width: 150px; accent-color: var(--accent); }
+        .control-row select, .control-row input[type="number"] { background: var(--bg-code); border: 1px solid var(--border); color: var(--text-primary); border-radius: 4px; padding: 0.3rem 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; }
+        .control-row .val { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); min-width: 80px; text-align: right; }
+        .btn { font-family: var(--font-mono); font-size: 0.8rem; padding: 0.4rem 0.9rem; background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent); border-radius: 4px; cursor: pointer; transition: background 0.15s ease; }
+        .btn:hover { background: rgba(167,139,250,0.25); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn.secondary { background: var(--bg-code); color: var(--text-secondary); border-color: var(--border); }
+        .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; margin-top: 0.75rem; }
+        .metric { background: var(--bg-code); border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 0.8rem; text-align: center; }
+        .metric .metric-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; }
+        .metric .metric-value { font-family: var(--font-display); font-size: 1.25rem; color: var(--accent); font-weight: 600; margin-top: 0.2rem; }
+        .contents-list { list-style: none; padding-left: 0; counter-reset: contents; }
+        .contents-list li { counter-increment: contents; padding: 0.6rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+        .contents-list li:last-child { border-bottom: none; }
+        .contents-list li::before { content: counter(contents, decimal-leading-zero); font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); min-width: 2rem; }
+        .contents-list a { color: var(--text-primary); text-decoration: none; }
+        .contents-list a:hover { color: var(--accent); }
+        .footer { text-align: center; padding: 3rem 1.5rem; color: var(--text-secondary); font-size: 0.85rem; border-top: 1px solid var(--border); max-width: var(--max-width); margin: 0 auto; }
+        .footer a { color: var(--accent); text-decoration: none; }
+        .katex { color: var(--text-primary); }
+        .katex-display { margin: 1rem 0; overflow-x: auto; overflow-y: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 1rem 0; }
+        th { background: var(--bg-code); color: var(--accent); font-weight: 600; text-align: left; padding: 0.6rem 0.85rem; border-bottom: 1px solid var(--border); font-family: var(--font-display); }
+        td { padding: 0.5rem 0.85rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td { background: rgba(13, 17, 23, 0.5); }
+        @media (max-width: 640px) {
+            .slide { padding: 3rem 1rem; min-height: auto; }
+            .slide-number { font-size: 3rem; top: 1.5rem; right: 1rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .diagram-grid.cols-2, .diagram-grid.cols-3, .diagram-grid.cols-4 { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <div class="series-label">Mathematics for Machine Learning &mdash; Deck 01</div>
+    <h1>Introduction and <span class="accent">Motivation</span></h1>
+    <p class="subtitle">A map of the book: which mathematics, for which machine learning problem, and in what order.</p>
+
+    <div class="tags">
+        <span class="tag">four pillars</span><span class="tag">foundations</span>
+        <span class="tag">regression</span><span class="tag">PCA</span>
+        <span class="tag">GMM</span><span class="tag">SVM</span>
+    </div>
+
+    <div class="pipeline">
+        <span class="pipeline-step">data</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">features</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">model</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">predictor</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">prediction</span>
+    </div>
+</header>
+
+<section class="slide" id="slide-00">
+    <div class="slide-number">00</div>
+    <h2>Topics We'll Cover</h2>
+    <ul class="contents-list">
+        <li><a href="#slide-01">The book in one sentence</a></li>
+        <li><a href="#slide-02">Two languages: predictor and probabilistic model</a></li>
+        <li><a href="#slide-03">The data &rarr; features &rarr; predictor pipeline</a></li>
+        <li><a href="#slide-04">Part I &mdash; the four foundations</a></li>
+        <li><a href="#slide-05">Part II &mdash; the four algorithms</a></li>
+        <li><a href="#slide-06">Interactive: the chapter dependency graph</a></li>
+        <li><a href="#slide-07">Notation we'll use throughout</a></li>
+        <li><a href="#slide-08">How to read the book and the deck together</a></li>
+        <li><a href="#slide-09">A worked preview: a one-feature linear model</a></li>
+        <li><a href="#slide-10">Chapter map and what's next</a></li>
+    </ul>
+</section>
+
+<section class="slide" id="slide-01">
+    <div class="slide-number">01</div>
+    <h2>The Book in One Sentence</h2>
+    <p>Deisenroth, Faisal &amp; Ong frame the book around a single observation:</p>
+    <div class="quote">
+        <p>"Most machine learning algorithms can be cast as a combination of <strong>four pillars</strong> &mdash; regression, dimensionality reduction, density estimation and classification &mdash; and each of them is built from <strong>four mathematical foundations</strong>: linear algebra, analytic geometry &amp; vector calculus, probability &amp; distributions, and continuous optimisation."</p>
+        <span class="attr">&mdash; paraphrased from the book's preface</span>
+    </div>
+    <p>Part I (chapters 2&ndash;7) develops the four foundations from scratch. Part II (chapters 8&ndash;12) takes each algorithm in turn and re-derives it using the tools of Part I &mdash; not as a list of recipes, but as something that <em>had to look this way</em>.</p>
+    <div class="callout">
+        <div class="callout-label">Companion philosophy</div>
+        <p>This deck series follows the same arc. Decks 02&ndash;07 visualise the foundations; decks 08&ndash;12 visualise how the four algorithms are built from them. The chapter and section numbers in every deck correspond to the book, so you can flip between them.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-02">
+    <div class="slide-number">02</div>
+    <h2>Two Languages: Predictor and Probabilistic Model</h2>
+    <p>A theme of the book is that every ML algorithm can be cast in two equivalent forms, and the choice of form is largely a matter of taste &mdash; until you need uncertainty.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>1. Predictor function</h4>
+            <p>A deterministic map $f:\mathbb{R}^D \to \mathbb{R}$ or $\{1,\dots,K\}$.</p>
+            <p>$$\hat y = f(\mathbf{x};\boldsymbol\theta)$$</p>
+            <p>"Given $\mathbf{x}$, return the best guess for $y$." Risk-minimisation, regularisation, the bias-variance picture all live here.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>2. Probabilistic model</h4>
+            <p>A conditional distribution $p(y\mid\mathbf{x};\boldsymbol\theta)$, or a joint $p(\mathbf{x},y\mid\boldsymbol\theta)$.</p>
+            <p>$$\hat y \sim p(y\mid \mathbf{x};\boldsymbol\theta)$$</p>
+            <p>Same predictor at the mode &mdash; but now you also have a posterior, an entropy, and a calibrated uncertainty.</p>
+        </div>
+    </div>
+    <p>The book gives both versions of every Part II algorithm. The companion does the same: where it matters, you'll see the deterministic picture <em>and</em> the Bayesian posterior side by side.</p>
+</section>
+
+<section class="slide" id="slide-03">
+    <div class="slide-number">03</div>
+    <h2>The Data &rarr; Features &rarr; Predictor Pipeline</h2>
+    <p>The book's section 1.1 walks through the standard ML pipeline. Every later algorithm is some specialisation of this picture.</p>
+
+    <div class="diagram-grid cols-4">
+        <div class="diagram-panel accent-border">
+            <h4>Data</h4>
+            <p>Raw observations $\{(\mathbf{x}_n, y_n)\}_{n=1}^N$. Numerical, after preprocessing.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Features</h4>
+            <p>$\boldsymbol\phi(\mathbf{x}_n)$ &mdash; a vector representation suitable for the model class.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>Model</h4>
+            <p>A function (or distribution) class parameterised by $\boldsymbol\theta$.</p>
+        </div>
+        <div class="diagram-panel r">
+            <h4>Predictor</h4>
+            <p>The instance $f(\,\cdot\,;\hat{\boldsymbol\theta})$ produced once training has chosen $\hat{\boldsymbol\theta}$.</p>
+        </div>
+    </div>
+
+    <p>Training is the inverse problem: given data, find $\boldsymbol\theta$ that makes the model fit well, without overfitting. That single sentence hides three of the book's deepest themes &mdash; the loss / likelihood, regularisation / prior, and generalisation. Chapter 8 (deck 08) makes them explicit.</p>
+</section>
+
+<section class="slide" id="slide-04">
+    <div class="slide-number">04</div>
+    <h2>Part I &mdash; The Four Foundations</h2>
+    <p>Six chapters, four foundations. The book splits "analytic geometry &amp; vector calculus" across two chapters, and adds optimisation as a fifth foundation; we group them here exactly as the book does.</p>
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Linear algebra (ch. 2)</h4>
+            <p>Vectors, matrices, systems of equations, vector spaces, basis &amp; rank, linear maps. The language every later chapter uses.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Analytic geometry (ch. 3) &amp; matrix decompositions (ch. 4)</h4>
+            <p>Inner products, norms, projections, rotations, then determinants, eigenvalues, Cholesky, SVD. The structure theorems.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Vector calculus (ch. 5)</h4>
+            <p>Partial derivatives, gradients, Jacobians, chain rule, backpropagation, multivariate Taylor.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>Probability (ch. 6) &amp; optimisation (ch. 7)</h4>
+            <p>Sample spaces, sum / product / Bayes, the Gaussian; then gradient descent, Lagrange multipliers, convex optimisation.</p>
+        </div>
+    </div>
+    <p>None of these chapters mention machine learning &mdash; but every example is chosen because Part II will use it. The Gaussian gets ten pages because deck 11 needs every line of them.</p>
+</section>
+
+<section class="slide" id="slide-05">
+    <div class="slide-number">05</div>
+    <h2>Part II &mdash; The Four Algorithms</h2>
+    <p>Each Part II chapter takes one algorithm and re-derives it. The structure of every chapter is the same: state the problem, write the model, set up the loss / likelihood, solve, then critique.</p>
+
+    <table>
+        <thead><tr><th>Algorithm</th><th>Pillar</th><th>Heaviest Part I dependencies</th></tr></thead>
+        <tbody>
+            <tr><td><strong>Linear regression (ch. 9)</strong></td><td>Regression</td><td>linear algebra (ch. 2), analytic geometry (ch. 3 &mdash; projection), probability (ch. 6 &mdash; Gaussian)</td></tr>
+            <tr><td><strong>PCA (ch. 10)</strong></td><td>Dim. reduction</td><td>matrix decompositions (ch. 4 &mdash; eigendecomposition, SVD), analytic geometry (ch. 3 &mdash; orthogonal projection)</td></tr>
+            <tr><td><strong>GMM (ch. 11)</strong></td><td>Density estimation</td><td>probability (ch. 6 &mdash; Gaussian, marginalisation), optimisation (ch. 7 &mdash; EM)</td></tr>
+            <tr><td><strong>SVM (ch. 12)</strong></td><td>Classification</td><td>optimisation (ch. 7 &mdash; Lagrange dual, convexity), analytic geometry (ch. 3 &mdash; hyperplane distance)</td></tr>
+        </tbody>
+    </table>
+
+    <p>Notice that <em>every Part II algorithm uses at least two Part I chapters</em>. This is why the book is the size it is: you can't shortcut to PCA without knowing what an eigenvector is.</p>
+</section>
+
+<section class="slide" id="slide-06">
+    <div class="slide-number">06</div>
+    <h2>Interactive: The Chapter Dependency Graph</h2>
+    <p>Hover or tap any chapter node. Its prerequisites in Part I light up; the algorithms it feeds in Part II light up too. This is the same dependency graph the authors draw in figure 1.1 of the book, made live.</p>
+
+    <div class="canvas-wrap">
+        <canvas id="dep-graph" width="820" height="460"></canvas>
+        <div style="text-align:center; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+            Hover any chapter; click to pin.
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Pedagogical note</div>
+        <p>The graph is not quite a tree &mdash; chapter 9 (regression) depends on both projection (ch. 3) and the Gaussian (ch. 6), and the SVM in chapter 12 depends on chapter 3, 7 <em>and</em> a hint of chapter 6. The shortest path through the book is therefore not 1&nbsp;&rarr;&nbsp;2&nbsp;&rarr;&nbsp;3&nbsp;&rarr;&nbsp;... but rather a topological order over this DAG.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-07">
+    <div class="slide-number">07</div>
+    <h2>Notation We'll Use Throughout</h2>
+    <p>The book is careful about notation; so is the companion. The conventions below match the book exactly.</p>
+
+    <table>
+        <thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+        <tbody>
+            <tr><td>$\mathbf{x}, \mathbf{v}, \boldsymbol\theta$</td><td>Column vectors (bold lowercase)</td></tr>
+            <tr><td>$A, B, \Sigma$</td><td>Matrices (capital letters)</td></tr>
+            <tr><td>$\alpha, \lambda, \sigma$</td><td>Scalars (Greek lowercase)</td></tr>
+            <tr><td>$\mathbb{R}^D$</td><td>$D$-dimensional real space</td></tr>
+            <tr><td>$\mathcal{N}(\boldsymbol\mu, \Sigma)$</td><td>Multivariate Gaussian with mean $\boldsymbol\mu$ and covariance $\Sigma$</td></tr>
+            <tr><td>$p(\mathbf{x}\mid\boldsymbol\theta)$</td><td>Conditional density of $\mathbf{x}$ given parameter $\boldsymbol\theta$</td></tr>
+            <tr><td>$\mathbb{E}_p[\cdot]$, $\mathbb{V}_p[\cdot]$</td><td>Expectation and variance under $p$</td></tr>
+            <tr><td>$\langle \mathbf{u}, \mathbf{v}\rangle$</td><td>Inner product; equals $\mathbf{u}^\top\mathbf{v}$ in $\mathbb{R}^D$ with the standard inner product</td></tr>
+            <tr><td>$\|\mathbf{v}\|$</td><td>Norm of $\mathbf{v}$ &mdash; defaults to $\sqrt{\langle\mathbf{v},\mathbf{v}\rangle}$ unless specified</td></tr>
+        </tbody>
+    </table>
+
+    <p>Two minor abuses we accept (the book accepts them too): writing $p(\mathbf{x})$ for both a probability mass function and a density when context is clear, and using the same symbol for a function and its evaluation when no confusion can arise.</p>
+</section>
+
+<section class="slide" id="slide-08">
+    <div class="slide-number">08</div>
+    <h2>How to Read the Book and the Deck Together</h2>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Open both</h4>
+            <p>Keep the <a href="https://mml-book.github.io/book/mml-book.pdf" style="color:var(--accent)">free PDF</a> on one screen and the deck on another. Every deck's slide titles match the book's section titles.</p>
+        </div>
+        <div class="diagram-panel y">
+            <h4>Touch the widgets</h4>
+            <p>Every deck has at least one interactive widget. The maths is in the book; the widget is what builds your intuition. Drag, scrub, click.</p>
+        </div>
+        <div class="diagram-panel g">
+            <h4>Do the exercises</h4>
+            <p>The book's end-of-chapter exercises are excellent. The deck does <em>not</em> reproduce them &mdash; it builds the geometric and numerical intuition that makes them tractable.</p>
+        </div>
+        <div class="diagram-panel r">
+            <h4>Skip strategically</h4>
+            <p>If you already know chapter 2, skim deck 02 for the conventions and dive into deck 03. The DAG on slide 06 tells you what is safe to skip.</p>
+        </div>
+    </div>
+</section>
+
+<section class="slide" id="slide-09">
+    <div class="slide-number">09</div>
+    <h2>A Worked Preview &mdash; A One-Feature Linear Model</h2>
+    <p>Just to make the abstract talk concrete, here's the simplest model in the book, with every piece of vocabulary labelled.</p>
+    <p>$$y_n \;=\; \theta\, x_n \;+\; \varepsilon_n, \qquad \varepsilon_n \sim \mathcal{N}(0,\sigma^2)$$</p>
+    <ul>
+        <li><strong>Data</strong>: $\{(x_n, y_n)\}_{n=1}^N$, with $x_n, y_n\in\mathbb{R}$ (deck 08).</li>
+        <li><strong>Features</strong>: trivial here &mdash; $\phi(x)=x$. Deck 09 generalises to $\phi(x) = (1, x, x^2, \dots)$.</li>
+        <li><strong>Model</strong>: linear with one parameter $\theta\in\mathbb{R}$ and Gaussian noise (deck 09).</li>
+        <li><strong>Loss</strong>: empirical risk = mean squared error $\;\hat R(\theta) = \tfrac{1}{N}\sum_n (y_n-\theta x_n)^2$ (deck 08).</li>
+        <li><strong>Solution</strong>: gradient zero &rArr; $\hat\theta = \sum x_n y_n / \sum x_n^2$. This is the simplest case of the normal equation (deck 09); geometrically it's the orthogonal projection of $\mathbf{y}$ on the line spanned by $\mathbf{x}$ (deck 03).</li>
+        <li><strong>Uncertainty</strong>: assuming the noise model is right, the posterior $p(\theta\mid\text{data})$ is Gaussian (deck 06 &amp; 09).</li>
+    </ul>
+    <p>Six chapters of the book just appeared in one paragraph. Every step is a thing we'll meet again at higher dimension and with more sophistication.</p>
+</section>
+
+<section class="slide" id="slide-10">
+    <div class="slide-number">10</div>
+    <h2>Chapter Map and What's Next</h2>
+    <p>Each row links to the corresponding deck in this series. Build the foundations first; everything in Part II then lands easily.</p>
+
+    <table>
+        <thead><tr><th>#</th><th>Chapter</th><th>Companion deck</th></tr></thead>
+        <tbody>
+            <tr><td>2</td><td>Linear Algebra</td><td><a href="https://brendanjameslynskey.github.io/MML_02_Linear_Algebra/" style="color:var(--accent)">MML_02 &rarr;</a></td></tr>
+            <tr><td>3</td><td>Analytic Geometry</td><td><a href="https://brendanjameslynskey.github.io/MML_03_Analytic_Geometry/" style="color:var(--accent)">MML_03 &rarr;</a></td></tr>
+            <tr><td>4</td><td>Matrix Decompositions</td><td><a href="https://brendanjameslynskey.github.io/MML_04_Matrix_Decompositions/" style="color:var(--accent)">MML_04 &rarr;</a></td></tr>
+            <tr><td>5</td><td>Vector Calculus</td><td><a href="https://brendanjameslynskey.github.io/MML_05_Vector_Calculus/" style="color:var(--accent)">MML_05 &rarr;</a></td></tr>
+            <tr><td>6</td><td>Probability &amp; Distributions</td><td><a href="https://brendanjameslynskey.github.io/MML_06_Probability_and_Distributions/" style="color:var(--accent)">MML_06 &rarr;</a></td></tr>
+            <tr><td>7</td><td>Continuous Optimisation</td><td><a href="https://brendanjameslynskey.github.io/MML_07_Continuous_Optimisation/" style="color:var(--accent)">MML_07 &rarr;</a></td></tr>
+            <tr><td>8</td><td>When Models Meet Data</td><td><a href="https://brendanjameslynskey.github.io/MML_08_When_Models_Meet_Data/" style="color:var(--accent)">MML_08 &rarr;</a></td></tr>
+            <tr><td>9</td><td>Linear Regression</td><td><a href="https://brendanjameslynskey.github.io/MML_09_Linear_Regression/" style="color:var(--accent)">MML_09 &rarr;</a></td></tr>
+            <tr><td>10</td><td>PCA</td><td><a href="https://brendanjameslynskey.github.io/MML_10_PCA/" style="color:var(--accent)">MML_10 &rarr;</a></td></tr>
+            <tr><td>11</td><td>GMM</td><td><a href="https://brendanjameslynskey.github.io/MML_11_Gaussian_Mixture_Models/" style="color:var(--accent)">MML_11 &rarr;</a></td></tr>
+            <tr><td>12</td><td>SVM</td><td><a href="https://brendanjameslynskey.github.io/MML_12_Support_Vector_Machines/" style="color:var(--accent)">MML_12 &rarr;</a></td></tr>
+        </tbody>
+    </table>
+
+    <div class="callout">
+        <div class="callout-label">Up next</div>
+        <p>Deck 02 picks up where the book's chapter 2 starts: a single system of linear equations, the question "when does it have a solution?", and the journey from there to vector spaces, basis, rank and linear maps. By the end of deck 02 we have all the machinery needed to write every later algorithm.</p>
+    </div>
+</section>
+
+<footer class="footer">
+    <p><strong>Book:</strong> Deisenroth, Faisal &amp; Ong, <em>Mathematics for Machine Learning</em> &mdash; Cambridge University Press, 2020.<br>Free PDF: <a href="https://mml-book.github.io/book/mml-book.pdf">mml-book.github.io/book/mml-book.pdf</a></p>
+    <p style="margin-top: 0.6rem;">Part of the <a href="https://github.com/BrendanJamesLynskey/MML_Hub">MML Companion Series</a> &middot; <a href="https://github.com/BrendanJamesLynskey/Mathematics">Mathematics hub</a></p>
+</footer>
+
+<script>
+// Chapter dependency graph: hover any node to light up prerequisites
+(function() {
+    const cvs = document.getElementById('dep-graph');
+    if (!cvs) return;
+    const ctx = cvs.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    cvs.width = 820 * dpr; cvs.height = 460 * dpr;
+    cvs.style.width = '820px'; cvs.style.height = '460px';
+    ctx.scale(dpr, dpr);
+
+    // Node positions and labels
+    const nodes = [
+        // Part I (top row, purple)
+        {id: 2,  x: 100, y: 80,  label: 'Linear Algebra',         part: 1},
+        {id: 3,  x: 240, y: 80,  label: 'Analytic Geometry',      part: 1},
+        {id: 4,  x: 380, y: 80,  label: 'Matrix Decompositions',  part: 1},
+        {id: 5,  x: 520, y: 80,  label: 'Vector Calculus',        part: 1},
+        {id: 6,  x: 660, y: 80,  label: 'Probability',            part: 1},
+        {id: 7,  x: 750, y: 200, label: 'Optimisation',           part: 1},
+        // Middle layer (chapter 8 - shared)
+        {id: 8,  x: 410, y: 240, label: 'When Models Meet Data',  part: 1.5},
+        // Part II (bottom row, pink)
+        {id: 9,  x: 120, y: 380, label: 'Linear Regression',      part: 2},
+        {id: 10, x: 300, y: 380, label: 'PCA',                    part: 2},
+        {id: 11, x: 480, y: 380, label: 'GMM',                    part: 2},
+        {id: 12, x: 680, y: 380, label: 'SVM',                    part: 2},
+    ];
+    const radius = 38;
+
+    // Edges as (from -> to) where "from" is a prerequisite
+    const edges = [
+        // chapter 8 prereqs (everything in Part I feeds models-meet-data)
+        [2,8],[5,8],[6,8],[7,8],
+        // regression (9) -> linear algebra, analytic geometry (projection), probability (Gaussian), opt, ch8
+        [2,9],[3,9],[6,9],[7,9],[8,9],
+        // PCA (10) -> linear algebra, analytic geometry, matrix decompositions (eigen, SVD), ch8
+        [2,10],[3,10],[4,10],[8,10],
+        // GMM (11) -> probability, optimisation (EM), ch8
+        [2,11],[6,11],[7,11],[8,11],
+        // SVM (12) -> analytic geometry (hyperplane), optimisation (Lagrange dual), ch8
+        [2,12],[3,12],[7,12],[8,12],
+    ];
+
+    const colors = {
+        bg: '#0d1117', border: '#21262d',
+        purple: '#a78bfa', purpleDim: '#a78bfa44',
+        pink: '#f472b6', pinkDim: '#f472b644',
+        yellow: '#fbbf24', yellowDim: '#fbbf2444',
+        green: '#34d399',
+        text: '#e6edf3', textDim: '#8b949e',
+        edgeDim: '#21262d', edgeLit: '#a78bfa',
+    };
+
+    function nodeColor(n, lit) {
+        if (n.part === 2) return lit ? colors.pink : colors.pinkDim;
+        if (n.part === 1.5) return lit ? colors.yellow : colors.yellowDim;
+        return lit ? colors.purple : colors.purpleDim;
+    }
+
+    let hoverId = null;
+    let pinnedId = null;
+
+    function relatedSet(id) {
+        if (id == null) return new Set();
+        const s = new Set([id]);
+        // upstream (prereqs): walk backwards
+        const stack = [id];
+        while (stack.length) {
+            const cur = stack.pop();
+            for (const [a, b] of edges) {
+                if (b === cur && !s.has(a)) { s.add(a); stack.push(a); }
+            }
+        }
+        // downstream (consumers): walk forward
+        const stack2 = [id];
+        while (stack2.length) {
+            const cur = stack2.pop();
+            for (const [a, b] of edges) {
+                if (a === cur && !s.has(b)) { s.add(b); stack2.push(b); }
+            }
+        }
+        return s;
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, 820, 460);
+        const activeId = pinnedId !== null ? pinnedId : hoverId;
+        const litSet = relatedSet(activeId);
+
+        // headers
+        ctx.fillStyle = colors.text;
+        ctx.font = '600 13px "Space Grotesk", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('Part I — Mathematical foundations', 20, 28);
+        ctx.fillText('Part II — Central ML problems',     20, 348);
+        ctx.fillStyle = colors.textDim;
+        ctx.font = '11px "JetBrains Mono", monospace';
+        ctx.fillText('hover any node to light up prerequisites and consumers; click to pin', 20, 448);
+
+        // edges
+        ctx.lineWidth = 1;
+        for (const [a, b] of edges) {
+            const na = nodes.find(n => n.id === a), nb = nodes.find(n => n.id === b);
+            const lit = activeId !== null && litSet.has(a) && litSet.has(b);
+            ctx.strokeStyle = lit ? colors.edgeLit : colors.edgeDim;
+            ctx.lineWidth = lit ? 2 : 1;
+            ctx.beginPath();
+            ctx.moveTo(na.x, na.y + radius * 0.6);
+            ctx.lineTo(nb.x, nb.y - radius * 0.6);
+            ctx.stroke();
+            // arrowhead
+            if (lit) {
+                const dx = nb.x - na.x, dy = (nb.y - radius*0.6) - (na.y + radius*0.6);
+                const len = Math.hypot(dx, dy);
+                const ux = dx / len, uy = dy / len;
+                const hx = nb.x - radius*0.6*ux, hy = nb.y - radius*0.6 - 0;
+                ctx.fillStyle = colors.edgeLit;
+                ctx.beginPath();
+                ctx.moveTo(hx, hy);
+                ctx.lineTo(hx - 7*ux + 4*uy, hy - 7*uy - 4*ux);
+                ctx.lineTo(hx - 7*ux - 4*uy, hy - 7*uy + 4*ux);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        // nodes
+        for (const n of nodes) {
+            const lit = activeId === null ? true : litSet.has(n.id);
+            const isActive = n.id === activeId;
+            ctx.fillStyle = colors.bg;
+            ctx.strokeStyle = nodeColor(n, lit);
+            ctx.lineWidth = isActive ? 3 : (lit ? 2 : 1);
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, radius, 0, 2*Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            // chapter number
+            ctx.fillStyle = lit ? nodeColor(n, true) : '#3a3a45';
+            ctx.font = '700 18px "Space Grotesk", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(String(n.id), n.x, n.y - 5);
+            ctx.fillStyle = lit ? colors.text : '#3a3a45';
+            ctx.font = '10px "JetBrains Mono", monospace';
+            // wrap label
+            const words = n.label.split(' ');
+            if (words.length > 1 && n.label.length > 12) {
+                ctx.fillText(words.slice(0, Math.ceil(words.length/2)).join(' '), n.x, n.y + 10);
+                ctx.fillText(words.slice(Math.ceil(words.length/2)).join(' '), n.x, n.y + 22);
+            } else {
+                ctx.fillText(n.label, n.x, n.y + 14);
+            }
+        }
+        ctx.textBaseline = 'alphabetic';
+    }
+
+    function hit(x, y) {
+        for (const n of nodes) {
+            if ((x-n.x)*(x-n.x) + (y-n.y)*(y-n.y) <= radius*radius) return n.id;
+        }
+        return null;
+    }
+    cvs.addEventListener('mousemove', e => {
+        const rect = cvs.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * (820 / rect.width);
+        const y = (e.clientY - rect.top) * (460 / rect.height);
+        const h = hit(x, y);
+        if (h !== hoverId) { hoverId = h; draw(); }
+        cvs.style.cursor = h !== null ? 'pointer' : 'default';
+    });
+    cvs.addEventListener('mouseleave', () => { hoverId = null; draw(); });
+    cvs.addEventListener('click', e => {
+        const rect = cvs.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * (820 / rect.width);
+        const y = (e.clientY - rect.top) * (460 / rect.height);
+        const h = hit(x, y);
+        pinnedId = (pinnedId === h) ? null : h;
+        draw();
+    });
+    draw();
+})();
+</script>
+
+</body>
+</html>
